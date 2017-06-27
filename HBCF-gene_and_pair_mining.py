@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 
-#This script selects genes that are not found in the A.vaga genes or ohnologues file and creates a fasta file#
-#for the individual gene to be run through BLAST.  The user selects that target scaffold number and runs it  #
-# like this         
-# python HBCF-gene_and_pair_mining.py 1 
-# will return the results for all genes in scaffold 1 that are the targets of the search.
-
 import sys
 from Bio import SeqIO
+import argparse
 
-gene = open('/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/genes.all', 'rU') #open the genes file
-alleles = open('/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.alleles', 'rU') #open the alleles file
-ohno = open('/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.ohnologues', 'rU') #open the ohnologues file
-scaffold = open('/groups/rotifer/Avgenome/Genoscope/v2/Joes_Adineta_vaga_v2.0.scaffolds.fa', 'rU') #open the fasta file
+parser = argparse.ArgumentParser(description='''Export fasta files for unpaired genes in a defined scaffold of the A.vaga genome''')
+parser.add_argument('scaffold', type=str, help = 'the scaffold number of the A.vaga genome that you want to analyze, e.g. 1')
+parser.add_argument('--genes_table', default='/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/genes.all', help = 'The full path to the genes.all file of the A.vaga genome v2 or a tab separated table: first column [scaffold id]; second column [gene_id]; third column [gene start position]; fourth column [gene end position] e.g. [av1][GSADVT00000034001][123][225]')
+parser.add_argument('--alleles', default='/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.alleles', help = 'The table of allele pairs from the v2 Consortium files named pairs.alleles or a table: first column [random]; second column[random]; third column [gene_1]; fourth column [gene_2] e.g. [0][0][GSADVT00000227001][GSADVT00022299001]')
+parser.add_argument('--ohno', default='/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.ohnologues', help = 'The table of the ohonologues from the v2 Consortium files named pairs.ohnologues, same file format as the alleles table')
+parser.add_argument('--genome', default='/groups/rotifer/Avgenome/Genoscope/v2/Joes_Adineta_vaga_v2.0.scaffolds.fa', help = 'The v2 A.vaga genome fasta file or a fasta file with headers named similar to this >scaffold_1_1087316_bp.')
+args = parser.parse_args()
 
-scaffold_name = sys.argv[1] # this should just be a single numeric value 1,2,3.. etc.
+gene = open(args.genes_table, 'rU') #open the genes file
+alleles = open(args.alleles, 'rU') #open the alleles file
+ohno = open(args.ohno, 'rU') #open the ohnologues file
+scaffold = open(args.genome, 'rU') #open the fasta file
+
+scaffold_name = args.scaffold# this should just be a single numeric value 1,2,3.. etc.
 scaffold_genes = 'av'+scaffold_name
 scaffold_fasta = 'scaffold_'+scaffold_name+'_'
 print ("searching for lonely pairs in %s" %(scaffold_fasta))
@@ -65,3 +68,10 @@ def select_from_fasta(name, gene, start, end): ## A function to select the regio
 for line in unpaired: ## Run each gene that is not found in either pairs file throught the function to create and individual fasta file.
     select_from_fasta(scaffold_fasta, line[0], line[1], line[2])
 
+if __name__ =='__main__':
+    parser = argparse.ArgumentParser(description='''Export fasta files for unpaired genes in a defined scaffold of the A.vaga genome''')
+    parser.add_argument('--scaffold', type=int, help = 'the scaffold number of the A.vaga genome that you want to analyze')
+    parser.add_argument('--genes_table', default='/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/genes.all', help = 'The full path to the genes.all file of the A.vaga genome v2 or a tab separated table: first column [scaffold id]; second column [gene_id]; third column [gene start position]; fourth column [gene end position] e.g. [av1][GSADVT00000034001][123][225]')
+    parser.add_argument('--alleles', default='/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.alleles', help = 'The table of allele pairs from the v2 Consortium files named pairs.alleles or a table: first column [random]; second column[random]; third column [gene_1]; fourth column [gene_2] e.g. [0][0][GSADVT00000227001][GSADVT00022299001]')
+    parser.add_argument('--ohno', default='/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.ohnologues', help = 'The table of the ohonologues from the v2 Consortium files named pairs.ohnologues, same file format as the alleles table')
+    parser.add_argument('--genome', default='/groups/rotifer/Avgenome/Genoscope/v2/Joes_Adineta_vaga_v2.0.scaffolds.fa', help = 'The v2 A.vaga genome fasta file or a fasta file with headers named similar to this >scaffold_1_1087316_bp.')

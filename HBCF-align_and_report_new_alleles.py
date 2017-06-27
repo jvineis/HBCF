@@ -7,6 +7,7 @@ from Bio import AlignIO
 import csv
 import StringIO
 from glob import glob
+print("This script is making awesome outputs for the allele_name_1 snp_position_1 base_1 allele_name_2 snp_position_2 base_2.  Make sure that you are running it from the location where the fasta files exist or nothing great will happen")
 
 x=1
 for filename in glob('*.fa'):

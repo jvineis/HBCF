@@ -1,9 +1,16 @@
 #!/bin/usr/env python 
 import sys
+import argparse
 
-infile = open(sys.argv[1], 'rU')
-genes =open('/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/genes.all')
-pairs =open('/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.all')
+parser = argparse.ArgumentParser(description='''Export allele and ohnologues tables indicating the unpaired gene and the new allele/ohnologue with scaffold positional information etc''')
+parser.add_argument('BLAST_infile', help = 'the name of the BLAST file - must be outfmt 10 as outlined in the HBCF wiki')
+parser.add_argument('--genes', default = '/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/genes.all', help = 'The full path to the genes.all file of the A.vaga genome v2 or a tab separated table: first column [scaffold id]; second column [gene_id]; third column [gene start position]; fourth column [gene end position] e.g. [av1][GSADVT00000034001][123][225]')
+parser.add_argument('--pairs', default = '/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.all', help = 'The full path to the pairs.all file of the A.vaga genome v2 or a tab separated table : first column [random]; second column[random]; third column [gene_1]; fourth column [gene_2] e.g. [0][0][GSADVT00000227001][GSADVT00022299001]')
+args = parser.parse_args()
+
+infile = open(args.BLAST_infile, 'rU')
+genes =open(args.genes, 'rU')
+pairs =open(args.pairs, 'rU')
 
 blast =[]
 for line in infile: # parse the blast file
