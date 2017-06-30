@@ -10,7 +10,8 @@ parser.add_argument('path_to_peptides', default = '/workspace/markwelchlab/Haplo
 args = parser.parse_args()
 
 file_names = open(args.fasta_file_list, 'rU')
-path_to_seq = '/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/FASTA/'
+path_to_seq = args.path_to_sequences
+#path_to_seq = '/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/FASTA/'
 
 for name in file_names:
     x = name.strip().split("_")

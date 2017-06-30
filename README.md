@@ -1,2 +1,2 @@
 # HBCF
-# HBCF
+There are many individual scripts that are used for various aspects of working with the Adineta vaga genome and transcriptome libraries created by David Mark-Welch and others. This wiki is designed to guide you though the many details of each script in the hopes that one might be able to assess various aspects of the A.vaga genome including the identification of potential gene conversion events, assessment of allele pairs, calculation of SNP density, and intron boundaries.

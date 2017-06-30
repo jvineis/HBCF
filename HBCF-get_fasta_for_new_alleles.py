@@ -5,10 +5,15 @@
 
 from Bio import SeqIO
 import sys
+import argparse
 
+parser = argparse.ArgumentParser(description = '''This script takes the output from the HBCF-filter_blast_for_pair_correcting.py or any table with four columns where the column ids are [unpaired_gene, unpaired_scaffold, new_gene_name, new_gene_scaffold, new_gene_start, new_gene_stop]. The output are indiviudal fasta files for each row in the table with a name corresponding to the columns of the table.''')
+parser.add_argument('fasta_file', default = '/groups/rotifer/Avgenome/Genoscope/v2/Adineta_vaga_v2.0.scaffolds.fa', help = 'a fasta file to extract sequences from')
+parser.add_argument('matching_locations', help = 'a table with the [unpaired_gene, unpaired_scaffold, new_gene_name, new_gene_scaffold, new_gene_start, new_gene_stop] columns')
+args = parser.parse_args()
 
-fasta = open('/groups/rotifer/Avgenome/Genoscope/v2/Adineta_vaga_v2.0.scaffolds.fa', 'rU')
-matching_locations = open(sys.argv[1], 'rU')# might be called NEW_GENES.txt contains columns "UNPAIRED_GENE, Unpaired scaffold, new_gene_name, new_gene_scaffold, new_gene_scaffold_start, new_gene_scaffold_end:
+fasta = open(args.fasta_file, 'rU')
+matching_locations = open(args.matching_locations, 'rU')# might be called NEW_GENES.txt contains columns "UNPAIRED_GENE, Unpaired scaffold, new_gene_name, new_gene_scaffold, new_gene_scaffold_start, new_gene_scaffold_end:
 
 matching_list_fwd = []
 matching_list_rev = []
