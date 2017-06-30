@@ -7,7 +7,7 @@ from Bio import SeqIO
 import sys
 import argparse
 
-parser = argparse.ArgumentParser(description = '''This script takes the output from the HBCF-filter_blast_for_pair_correcting.py or any table with four columns where the column ids are [unpaired_gene, unpaired_scaffold, new_gene_name, new_gene_scaffold, new_gene_start, new_gene_stop]. The output are indiviudal fasta files for each row in the table with a name corresponding to the columns of the table.''')
+parser = argparse.ArgumentParser(description = '''This script takes the output from the HBCF-filter_blast_for_pair_correcting.py or any table with four columns where the column ids are [unpaired_gene, unpaired_scaffold, new_gene_name, new_gene_scaffold, new_gene_start, new_gene_stop]. The output are indiviudal fasta files for each row in the table with a name corresponding to the columns of the table.  If the start position is larger than the stop position, the sequence returned is the reverse complement''')
 parser.add_argument('fasta_file', default = '/groups/rotifer/Avgenome/Genoscope/v2/Adineta_vaga_v2.0.scaffolds.fa', help = 'a fasta file to extract sequences from')
 parser.add_argument('matching_locations', help = 'a table with the [unpaired_gene, unpaired_scaffold, new_gene_name, new_gene_scaffold, new_gene_start, new_gene_stop] columns')
 args = parser.parse_args()
