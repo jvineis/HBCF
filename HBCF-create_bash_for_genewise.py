@@ -10,8 +10,7 @@ parser.add_argument('path_to_peptides', default = '/workspace/markwelchlab/Haplo
 args = parser.parse_args()
 
 file_names = open(args.fasta_file_list, 'rU')
-path_to_seq = args.path_to_sequences
-#path_to_seq = '/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/FASTA/'
+path_to_seq = '/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/FASTA/'
 
 for name in file_names:
     x = name.strip().split("_")
@@ -24,6 +23,6 @@ for name in file_names:
     for rec in SeqIO.parse(open(path_to_seq+name, 'rU'), 'fasta'):
         length.append(len(rec.seq))
  
-    command_line = "#!/bin/bash" +"\n" +"genewise %s/%s %s/%s -gene worm.gf -u 1 -v %s -embl -cdna -pep" %(args.path_to_peptides, peptide_fasta, args.path_to_sequences, name, length[0]) + " > %s.genewise.out.txt" %(name) 
+    command_line = "#!/bin/bash" +"\n" +"genewise %s/%s %s/%s -gene worm.gf -u 1 -v %s -cdna -pep -both" %(args.path_to_peptides, peptide_fasta, args.path_to_sequences, name, length[0]) + " > %s.genewise.out.txt" %(name) 
 #    command_line = "#!/bin/bash" +"\n" +"genewise /workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/PEP/%s /workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/FASTA/%s -gene worm.gf -u 1 -v %s -embl -cdna -pep" %(peptide_fasta, name, length[0]) + " > %s.genewise.out.txt" %(name)
     outfile.write(str(command_line))
