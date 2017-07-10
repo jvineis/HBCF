@@ -15,11 +15,18 @@
 # The gene split name are appended to the output "genes_per_split.txt".  If the split is outside the     ##
 # boundaries of all genes, "intron" is appended to the table.
 
-import sys
+import argparse
 
-basic_infile = open(sys.argv[1], 'rU')
-geneposition_infile = open(sys.argv[2], 'rU')
-outfile = open(sys.argv[3], 'w')
+parser = argparse.ArgumentParser(description='''I created this script to make a file that can be compatible with anvi-interactive -A. In the current form, it takes three arguments 1. the basic file created from anvio 2.  the scaffold file containing the gene name, gene start, gene stop  3. the outfile name''')
+parser.add_argument('basic_infile', help='the file created by anvio using anvi-export-table function')
+parser.add_argument('gene_positions', help='a three column text file indicating the gene name, gene start, and gene stop')
+parser.add_argument('outfile', help='the name of your outfile.  I humbly suggest something like "scaffold_name"_genes_per_split.txt')
+args=parser.parse_args()
+
+  
+basic_infile = open(args.basic_infile, 'rU')
+geneposition_infile = open(args.gene_positions, 'rU')
+outfile = open(args.outfile, 'w')
 
 basic_dict = {}
 with basic_infile as x:

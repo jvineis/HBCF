@@ -27,7 +27,7 @@
 import sys 
 
 anvio_table = open(sys.argv[1], 'rU')
-snp_positions = open('/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/TEST_DIR/MATCHING_PAIRS_SNPS.txt', 'rU')
+snp_positions = open('/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/JOES_CONSORTIUM_FILES/MATCHING_PAIRS_SNPS.txt', 'rU')
 lookup_gene = sys.argv[2]
 anvio_dict = {}
 
