@@ -62,7 +62,7 @@ def select_from_fasta(name, gene, start, end): ## A function to select the regio
     outfile = open(outfile_name, 'w')
     length = int(end)-int(start)
     x = target_seq[0][int(start):int(end)]
-    outfile.write(">"+gene+'_'+name+str(length)+'bp'+'_'+start+'_'+end+"\n"+str(x))
+    outfile.write(">"+gene+'_'+name+str(length)+'bp'+"\n"+str(x))
     return outfile
 
 for line in unpaired: ## Run each gene that is not found in either pairs file throught the function to create and individual fasta file.

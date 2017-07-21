@@ -9,11 +9,9 @@ parser.add_argument('-genes', default = '/groups/rotifer/Avgenome/Genoscope/v2/C
 parser.add_argument('-pairs', default = '/groups/rotifer/Avgenome/Genoscope/v2/ConsortiumFiles/pairs.all', help = 'The full path to the pairs.all file of the A.vaga genome v2 or a tab separated table : first column [random]; second column[random]; third column [gene_1]; fourth column [gene_2] e.g. [0][0][GSADVT00000227001][GSADVT00022299001]')
 parser.add_argument('-ohno_ident', default = '70.0', type = float, help = 'The minimum percent identitiy to be considered for ohnologue assignment')
 parser.add_argument('-allelic_ident', default = '90.0', type = float, help = 'The minimum percent identity to be considered for alleleic assignment')
-parser.add_argument('-length', default = '0.75', type = float, help = 'The minimum percentage length that the hit coveres the query sequence')
+parser.add_argument('-length', default = '75.0', type = float, help = 'The minimum percentage length that the hit coveres the query sequence')
 parser.add_argument('o', help = 'the directory to write output files')
 args = parser.parse_args()
-
-print(args.length)
 
 infile = open(args.BLAST_infile, 'rU')
 genes =open(args.genes, 'rU')
@@ -27,23 +25,24 @@ for line in infile: # parse the blast file
     header = x[0].split("_")
     blast.append([header[0], header[1]+'_'+header[2], header[3].strip("bp"), header[4], header[5], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11]])
     
+
 hits_to_self = []
 allele_hits = []
 ohno_hits = []
 
 for line in blast:
-    if int(line[7]) < 250:
+    if int(line[7]) < 250: # filter out any hit that is less than 205bp long
         next
-    elif line[1] == line[5] and int(line[3]) == int(line[12])-1 and float(line[6]) == 100.0:
+    elif line[1] == line[5] and int(line[4]) == int(line[13]) and int(line[3]) == int(line[12])-1: # filter out any hit that is hitting its self 
         hits_to_self.append(line)
-    elif float(float(line[7])/float(line[2])) > args.length and line[1] != line[5] and float(float(line[6])) < args.allelic_ident and float(float(line[6])) > args.ohno_ident:
-        ohno_hits.append(line)
-    elif float(float(line[7])/float(line[2])) > args.length and line[1] == line[5] and int(line[3]) != int(line[12])-1 and float(float(line[6])) < args.allelic_ident and float(float(line[6])) > args.ohno_ident:
-        ohno_hits.append(line)
-    elif float(float(line[7])/float(line[2])) > args.length and line[1] == line[5] and int(line[3]) != int(line[12])-1 and float(float(line[6])) > args.allelic_ident:
+    elif float(float(line[7])/float(line[2])) > 0.75 and line[1] != line[5] and float(float(line[6])) > args.allelic_ident: # length and percent identity of alleles on different scaffolds
         allele_hits.append(line)
-    elif float(float(line[7])/float(line[2])) > args.length and line[1] != line[5] and float(float(line[6])) > args.allelic_ident:
+    elif float(float(line[7])/float(line[2])) > 0.75 and line[1] == line[5] and int(line[3]) != int(line[12])-1 and float(float(line[6])) > args.allelic_ident: # length and percent identity of alleles on the same scaffold
         allele_hits.append(line)
+    elif float(float(line[7])/float(line[2])) > 0.75 and line[1] != line[5] and float(float(line[4])) < args.allelic_ident and float(float(line[6])) > args.ohno_ident: # length and percent identity of ohnologues on different scaffolds
+        ohno_hits.append(line)
+    elif float(float(line[7])/float(line[2])) > 0.75 and line[1] == line[5] and int(line[3]) != int(line[12])-1 and float(float(line[6])) < args.allelic_ident and float(float(line[6])) > args.ohno_ident: # length and percent identity of ohnologues on he same scaffold.
+        ohno_hits.append(line)
 
 print("whew, you recovered %d alleles" % (len(allele_hits)))
 print("awesome, you recovered %d ohnos" % (len(ohno_hits)))

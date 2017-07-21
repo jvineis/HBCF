@@ -14,17 +14,16 @@ parser.add_argument('--ref_pep', default='/groups/rotifer/Avgenome/Genoscope/v2/
 parser.add_argument('--score', default=20.0, type=float, help='the minimum score to accept the peptide sequence')
 args = parser.parse_args()
 
-
 genewise = args.fasta_file_name # name of the scaffold fasta file containing sequence hit by unpaired genes
 genewise_in = open(args.genewise+genewise+'.genewise.out.txt', 'rU') # open the genewise output
 outfile_fasta = open(args.o_nuc+genewise+'.cds_to_align.fa', 'w') # open the outfile to write the cds sequences
 outfile_pep = open(args.o_pep+genewise+'.pep_to_align.fa', 'w') # open the outfile to wirte the peptide sequences
 file_name = genewise.split("_") # separating the characters of the fasta file neede to select from the fasta containg the cds
+#print file_name
 gsadv = file_name[0][0:14]+'001' # the characters needed to select the cds from the Adineta_vaga_v2.0.annot.transcripts.forAnvio.fa
 print("gene analyzed",gsadv)
 cds_fasta = open(args.ref_fasta, 'rU')
 pep_fasta = open(args.ref_pep, 'rU')
-
 
 with cds_fasta as f: # Parse the fasta file corresponding to the cds found in the consortium files
     cds = SeqIO.parse(f, "fasta")
@@ -38,24 +37,29 @@ with pep_fasta as f:
         if gsadv in rec.id:
             outfile_pep.write('>'+str(rec.id)+'\n'+str(rec.seq)+'\n') # Write the pep header and sequence to the outfile
 
-
 genewise_contents = []# The rest of the code below is designed to pull the longest sequence out of the genewise output and add it to the existing outfile
+
 for line in genewise_in: # Parse the genewise infile into individual lines
     x = line.strip("\n")
     genewise_contents.append(x)
 
-
 a = [i for i, j in enumerate(genewise_contents) if 'Score' and 'alignment' in j] # record the position in the file where the Score is reported 
+print a
+
 genewise_contents_score_filtered = [] # Here we are making a subset of the "pretty" genewise output based on whether or not the score of the peptide hit is above a certain threshold (usually 20).  This is empty list to catch the results
+
 count = 0  # a counter
 for i in a: # for the positions of the genewise output that contains the score information e.g. [2,36,55]
     info = genewise_contents[i].split(" ") # split the line by spaces
     if count < int(len(a)-1) and float(info[1]) > float(args.score): # if 
         genewise_contents_score_filtered.append(genewise_contents[i:a[int(count)+1]])
+
     elif float(info[1]) > float(args.score):
         genewise_contents_score_filtered.append(genewise_contents[i:len(genewise_contents)])
+#        print "extracted lines", i, len(genewise_contents)
     count += 1
 
+#print genewise_contents_score_filtered
 
 def dna_and_pep_puller(genewise_fraction_to_analyze):
     dna_and_pep = {}
@@ -72,33 +76,37 @@ def dna_and_pep_puller(genewise_fraction_to_analyze):
             name = genewise_fraction_to_analyze[k[len(k)-1]]
             seq = "".join(genewise_fraction_to_analyze[int(k[len(k)-1])+1:int(line_count)])
             dna_and_pep[len(k)-1] = [name,seq]
+    print dna_and_pep
     return dna_and_pep
 
 
-dna_and_pep_master = []
-for i in genewise_contents_score_filtered: # This loops through each of the individually reported DNA and PEP hits from genewise and pulls out the sequence information (DNA and PEP) from the rest of the stuff
-    d = dna_and_pep_puller(i) # Run the dna_and_pep_puller function on the report which returns the name of the seq and the sequence
-    for key in d.keys(): # for each of the sequence lines   
-        dna_and_pep_master.append(d[key][0:len(d[key])])
+dna_and_pep_master = {}
+line = 1
+for i in genewise_contents_score_filtered:
+    d = dna_and_pep_puller(i)
+    for key in d.keys():
+        dna_and_pep_master[int(key)+line] = d[key][0:len(d[key])]
+    line += 1
 
+
+
+dict_keys = [] # a list of the keys in the dictionary created above
+for key in dna_and_pep_master.keys():
+    dict_keys.append(key)
 
 fasta_files = {}
 peptide_files = {}
 bases = ["A","G","C","T"]
 
-line = 0
-for dna in dna_and_pep_master: # This bit of code below takes care of the instances where the nucleotide sequence is divided into more than one part by an intron. I'm taking the two parts and pasting them together into a single file 
-    if "sp" in dna[0]:
-        seq = dna[1].split("//")
-        fasta_files[line] = [dna[0],len(seq[0]), seq[0]]
-    line += 1
+for key in dna_and_pep_master.keys(): # This bit of code below takes care of the instances where the nucleotide sequence is divided into more than one part by an intron. I'm taking the two parts and pasting them together into a single file 
+    if "sp" in dna_and_pep_master[key][0]:
+        seq = dna_and_pep_master[key][1].split("//")
+        fasta_files[key] = [dna_and_pep_master[key][0],len(seq[0]), seq[0]]
 
-line = 0
-for pep in dna_and_pep_master: # Here we write the peptide sequences to a dictionary
-    if "pep" in pep[0]:
-        pep = pep[1].split("//")
-        peptide_files[line] = [dna_and_pep_master[0], len(pep[0]), pep[0]]
-    line += 1
+for key in dna_and_pep_master.keys(): # Here we write the peptide sequences to a dictionary
+     if "pep" in dna_and_pep_master[key][0]:
+        pep = dna_and_pep_master[key][1].split("//")
+        peptide_files[key] = [dna_and_pep_master[key][0], len(pep[0]), pep[0]]
 
 peptide_seqs = [] # Put the peptide sequences from the peptide dictionary into a single list
 for key in peptide_files:

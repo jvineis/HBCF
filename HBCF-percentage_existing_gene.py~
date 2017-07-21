@@ -1,0 +1,13 @@
+#!/usr/bin/env python 
+
+import argparser
+
+parser = argparse.ArgumentParser(descripton = '''Calculate the percentage of ovelap between the genes identified as "new allele pairs" and the existing genes.  The code takes the output of HBCF-filter_blast_for_pair_correcting.py.  Either the the ALLELES_EXISTING_GENES.txt or OHNO_EXISTING_GENES.txt''')
+parser.add_argument('ohno_allele_table', help = 'This is this is the greatest freaking table with columns containing [unpaired_gene] [unpaired_scaffold] [new_gene_name] [existing_gene_scaffold] [existing_gene_start][existing_gene_stop] [new_gene_start] [new_gene_stop]')
+args = parser.parse_args()
+
+table = open(args.ohno_allele_table, 'rU')
+
+for line in table:
+    b = line.strip('\n').split('\t')
+    print b

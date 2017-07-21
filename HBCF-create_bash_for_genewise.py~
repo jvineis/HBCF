@@ -23,6 +23,6 @@ for name in file_names:
     for rec in SeqIO.parse(open(path_to_seq+name, 'rU'), 'fasta'):
         length.append(len(rec.seq))
  
-    command_line = "#!/bin/bash" +"\n" +"genewise %s/%s %s/%s -gene worm.gf -cdna -pep -both -pretty" %(args.pep, peptide_fasta, args.dna, name) + " > %s.genewise.out.txt" %(name) 
+    command_line = "#!/bin/bash" +"\n" +"genewise %s/%s %s/%s -gene worm.gf -cdna -pep -both" %(args.pep, peptide_fasta, args.dna, name) + " > %s.genewise.out.txt" %(name) 
 #    command_line = "#!/bin/bash" +"\n" +"genewise /workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/PEP/%s /workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/FASTA/%s -gene worm.gf -u 1 -v %s -embl -cdna -pep" %(peptide_fasta, name, length[0]) + " > %s.genewise.out.txt" %(name)
     outfile.write(str(command_line))
