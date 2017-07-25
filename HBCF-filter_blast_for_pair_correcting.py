@@ -32,10 +32,12 @@ allele_hits = []
 ohno_hits = []
 
 for line in blast:
+
     if int(line[7]) < 250:
         next
     elif line[1] == line[5] and int(line[3]) == int(line[12])-1 and float(line[6]) == 100.0:
         hits_to_self.append(line)
+        print line
     elif float(float(line[7])/float(line[2])) > args.length and line[1] != line[5] and float(float(line[6])) < args.allelic_ident and float(float(line[6])) > args.ohno_ident:
         ohno_hits.append(line)
     elif float(float(line[7])/float(line[2])) > args.length and line[1] == line[5] and int(line[3]) != int(line[12])-1 and float(float(line[6])) < args.allelic_ident and float(float(line[6])) > args.ohno_ident:
@@ -139,6 +141,8 @@ for p in ohno_hits:
             n = "00000"
         if len(str(int(c[1])+1)) == 5:
             n = "000000"
+        if len(str(int(c[1])+1)) == 4:
+            n = "0000000"
         new_name = c[0]+'T'+n+str(int(c[1])+500)
         ohno_new_genes.append([p[0],p[1], new_name, p[5], p[12], p[13], p[6], p[7],p[14]])
 
