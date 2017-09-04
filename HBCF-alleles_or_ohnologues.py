@@ -4,8 +4,8 @@ import sys
 import argparse
 parser = argparse.ArgumentParser(description='''Separates the quality blast hits filtered by HBCF-filter_blast_for_pair_correcting.py into potential Ohnologues and Alleles''')
 parser.add_argument('allele_table', help = 'one of the four allele or ohnologue tables produced by HBCF-filter_blast_for_pair_correcting.py')
-parser.add_argument('single_hit_table', help = 'the table of hits that have a match to only one other postion in the genome')
-parser.add_argument('multiple_hit_table', help = 'the table of hits that have a match to multiple position in the genome')
+parser.add_argument('single_hit_table', help = 'the name you would like to use for the table of hits that have a match to only one other postion in the genome')
+parser.add_argument('multiple_hit_table', help = 'the name you would like to use for the table of hits that have a match to multiple position in the genome')
 parser.add_argument('--number_of_hits', default = 1, help = 'change this value to 2 when looking for ohnologues')
 args = parser.parse_args()
 

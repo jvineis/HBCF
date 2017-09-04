@@ -44,6 +44,7 @@ for line in geneposition_infile: # run through the gene positions file containin
         if int(x[1]) < int(basic_dict[key][1]) and int(x[2]) > int(basic_dict[key][2]): # if the start of the gene x[1] is less than the start of the split basic_dict[key][1]
                                                                                         # and the end of the gene x[2] is more than the end of the split basic_dict[key][2]
             hits.append([key, x[0]]) #append the key and name of the gene to the hit list
+            print(key)
             hitsd[key] = x[0] #do the same for a dictionary
 
 for line in hits:# run through the lines of the hits

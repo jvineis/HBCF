@@ -26,7 +26,7 @@ count = 0
 gene_list = sorted(gene_list)
 
 
-for gene in gene_list: # Here is how we make a dictionary for each gene with the ten genes downstream as the values 
+for gene in gene_list: # Here is how we make a dictionary for each gene with the twenty genes downstream as the values 
     print (count, gene)
     if count >= 0 and count <= len(gene_list)-20:
         gene_dict[gene[0]] = gene_list[count][0], gene_list[count+1][0], gene_list[count+2][0], gene_list[count+3][0], gene_list[count+4][0], gene_list[count+5][0], gene_list[count+6][0], gene_list[count+6][0], gene_list[count+7][0], gene_list[count+8][0], gene_list[count+9][0], gene_list[count+10][0], gene_list[count+11][0], gene_list[count+12][0], gene_list[count+13][0], gene_list[count+14][0], gene_list[count+15][0], gene_list[count+16][0], gene_list[count+17][0], gene_list[count+18][0], gene_list[count+19][0]#, gene_list[count+20][0]

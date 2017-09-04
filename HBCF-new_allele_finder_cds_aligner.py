@@ -6,6 +6,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='''Extract the cds of a genewise output and the allelic cds from the A.vaga genome and write both sequences to a single fasta file for alignment with muscle''')
 parser.add_argument('fasta_file_name', help = 'the name of the fasta file containing the sequence hit by the unpaired gene')
+parser.add_argument('matching_locations', help = 'the table containg the unpaired hits to new or existing genes - ususally called ALLELES_NEW_GENES.txt or ALLELES_EXISTING_GENES.txt')
 parser.add_argument('--genewise', default='/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/GENE_AND_PAIR_MINING/NEW_ALLELES/GENEWISE/', help='The directory containing the genewise output.  Files within the directory must have names that link it to the fasta file input name e.g. fasta_file.genewise.out.txt')
 parser.add_argument('--o_pep', default='.', help='The location for output of the peptide fasta')
 parser.add_argument('--o_nuc', default='.', help='The location for output of the nucleotide fasta')
@@ -14,13 +15,20 @@ parser.add_argument('--ref_pep', default='/groups/rotifer/Avgenome/Genoscope/v2/
 parser.add_argument('--score', default=20.0, type=float, help='the minimum score to accept the peptide sequence')
 args = parser.parse_args()
 
-
+matching_locations = open(args.matching_locations, 'rU')
 genewise = args.fasta_file_name # name of the scaffold fasta file containing sequence hit by unpaired genes
 genewise_in = open(args.genewise+genewise+'.genewise.out.txt', 'rU') # open the genewise output
 outfile_fasta = open(args.o_nuc+genewise+'.cds_to_align.fa', 'w') # open the outfile to write the cds sequences
 outfile_pep = open(args.o_pep+genewise+'.pep_to_align.fa', 'w') # open the outfile to wirte the peptide sequences
 file_name = genewise.split("_") # separating the characters of the fasta file neede to select from the fasta containg the cds
-gsadv = file_name[0][0:14]+'001' # the characters needed to select the cds from the Adineta_vaga_v2.0.annot.transcripts.forAnvio.fa
+gsadv_f = file_name[1][0:14]+'001' # the characters needed to select the cds from the Adineta_vaga_v2.0.annot.transcripts.forAnvio.fa
+for line in matching_locations:
+    x = line.strip().split("\t")
+    target = line.strip().split("\t")[2].split("_")[1][0:14]+'001'
+    if gsadv_f == target:
+        gsadv = x[0]
+        print gsadv, target
+        
 print("gene analyzed",gsadv)
 cds_fasta = open(args.ref_fasta, 'rU')
 pep_fasta = open(args.ref_pep, 'rU')
@@ -44,7 +52,6 @@ for line in genewise_in: # Parse the genewise infile into individual lines
     x = line.strip("\n")
     genewise_contents.append(x)
 
-
 a = [i for i, j in enumerate(genewise_contents) if 'Score' and 'alignment' in j] # record the position in the file where the Score is reported 
 genewise_contents_score_filtered = [] # Here we are making a subset of the "pretty" genewise output based on whether or not the score of the peptide hit is above a certain threshold (usually 20).  This is empty list to catch the results
 count = 0  # a counter
@@ -56,10 +63,11 @@ for i in a: # for the positions of the genewise output that contains the score i
         genewise_contents_score_filtered.append(genewise_contents[i:len(genewise_contents)])
     count += 1
 
+#print genewise_contents_score_filtered
 
 def dna_and_pep_puller(genewise_fraction_to_analyze):
     dna_and_pep = {}
-    k = [i for i, j in enumerate(genewise_fraction_to_analyze) if '>GSADVT' in j]
+    k = [i for i, j in enumerate(genewise_fraction_to_analyze) if 'GSADVT' in j]
     line_count = len(genewise_fraction_to_analyze)
     n = 0
     for start in k:
@@ -104,7 +112,7 @@ peptide_seqs = [] # Put the peptide sequences from the peptide dictionary into a
 for key in peptide_files:
     peptide_seqs.append(peptide_files[key][2])
 
-nucleotide_seqs = [] # Put the nucleotide sequences from the peptide dictionary into a single list
+nucleotide_seqs = [] # Put the nucleotide sequences from the nucleotide dictionary into a single list
 for key in fasta_files.keys():
     nucleotide_seqs.append(fasta_files[key][2])
 
@@ -112,7 +120,7 @@ big_fasta_seq = "".join(nucleotide_seqs)
 big_pep_seq = "".join(peptide_seqs)
 print("your nucleotide seq", big_fasta_seq)
 print("your peptide seq", big_pep_seq)
-genewise_fasta_header = file_name[0][0:14]+'_genewise'
+genewise_fasta_header = file_name[0]+"_"+file_name[1]
 
 outfile_fasta.write(">"+genewise_fasta_header+"\n"+big_fasta_seq)
 outfile_pep.write(">"+genewise_fasta_header+"_pep"+"\n"+big_pep_seq)

@@ -5,7 +5,7 @@
 # anvi-export-table CONTIGS.db --table splits_basic_info -o basic.txt                          ##
 # The output table has already been altered to include whether or not the split falls within   ##
 # a gene or an intron and the name of the gene using the following scripts.                    ##
-# python ~/scripts/au-add_to_basic_info_table.py basic.txt gene_position_list.txt              ##
+# python ~/scripts/HBCF-anvio_add_to_basic_info_table.py basic.txt gene_position_list.txt out  ##
 # We will use the output from this script "genes_per_split.txt" as the input and the matchinig ##
 # pairs file that contains the SNPs and their locations within the gene to give a rough        ##
 # of where the SNPs fall within each of the splits (if any).  Matching pairs file:             ## 
@@ -26,7 +26,7 @@
 
 import sys 
 
-anvio_table = open(sys.argv[1], 'rU')
+anvio_table = open(sys.argv[1], 'rU') # a "genes_per_split.txt" table
 snp_positions = open('/workspace/markwelchlab/Haplotype_Based_Conversion_Finder/JOES_CONSORTIUM_FILES/MATCHING_PAIRS_SNPS.txt', 'rU')
 lookup_gene = sys.argv[2]
 anvio_dict = {}
@@ -78,6 +78,9 @@ else:
             #else:
             #    no_snp_list[key] = [str(key), str("EXON"), str(gene_dict[key][0]), str(gene_dict[key][1]), str(x[1]), str(gene_dict[key][2]), str("consensus")]
             #    print (gene_dict[key], "consensus")
+            elif gene_dict[key][0] == x[4] and int(x[5]) > int(gene_dict[key][1]) and int(x[5]) < int(gene_dict[key][2]):
+                hit_list[key] = [str(key), str("EXON"), str(gene_dict[key][0]), str(gene_dict[key][1]), str(x[1]), str(gene_dict[key][2]), str("snp")]
+                print( "found one because you fixed it")
     for key in hit_list.keys(): ## write each of the snps to the table with all the good information for anvio :)
         outfile.write(str(key) +"\t"+str(hit_list[key][1]) +"\t"+ str(hit_list[key][2])+"\t"+str(hit_list[key][3]) +"\t"+str(hit_list[key][4]) +"\t"+ str(hit_list[key][5])+"\t"+str(hit_list[key][6]) + "\n")
     for key in gene_dict.keys():
